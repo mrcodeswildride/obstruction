@@ -1,62 +1,82 @@
-var rows = document.querySelectorAll(".row");
-var squares = document.querySelectorAll(".row div");
-var messageDisplay = document.getElementById("message");
+let rows = document.getElementsByClassName(`row`)
+let squares = document.getElementsByClassName(`square`)
+let messageParagraph = document.getElementById(`messageParagraph`)
 
-var gameInProgress = true;
-var turn = "O";
+let turn = `O`
+let gameOver = false
 
-for (var i = 0; i < squares.length; i++) {
-    squares[i].addEventListener("click", clickSquare);
+for (let square of squares) {
+  square.addEventListener(`click`, clickSquare)
 }
 
 function clickSquare() {
-    if (gameInProgress && this.innerHTML == "" && !this.classList.contains("touching")) {
-        selectSquare(this);
+  if (this.innerHTML == `` && !this.classList.contains(`touching`) && !gameOver) {
+    selectSquare(this)
 
-        if (gameOver()) {
-            gameInProgress = false;
-            messageDisplay.innerHTML = turn + " wins!";
-        }
-        else {
-            turn = turn == "O" ? "X" : "O";
-        }
+    if (boardIsFull()) {
+      messageParagraph.innerHTML = `${turn} wins!`
+      gameOver = true
     }
+    else {
+      turn = turn == `O` ? `X` : `O`
+    }
+  }
 }
 
 function selectSquare(square) {
-    square.innerHTML = turn;
+  square.innerHTML = turn
 
-    for (var yDiff = -1; yDiff <= 1; yDiff++) {
-        for (var xDiff = -1; xDiff <= 1; xDiff++) {
-            if (xDiff != 0 || yDiff != 0) {
-                markNeighbor(square, xDiff, yDiff);
-            }
+  for (let yDiff = -1; yDiff <= 1; yDiff++) {
+    for (let xDiff = -1; xDiff <= 1; xDiff++) {
+      if (xDiff != 0 || yDiff != 0) {
+        let neighbor = getNeighbor(square, xDiff, yDiff)
+
+        if (neighbor != null) {
+          neighbor.classList.add(`touching`)
         }
+      }
     }
+  }
 }
 
-function markNeighbor(square, xDiff, yDiff) {
-    var x = parseInt(square.getAttribute("index"), 10);
-    var y = parseInt(square.parentElement.getAttribute("index"), 10);
+function getNeighbor(square, xDiff, yDiff) {
+  let row = square.parentElement // row of square
+  let y // y coordinate of square, set below
+  let x // x coordinate of square, set below
 
-    var row = rows[y + yDiff];
-    var neighbor = null;
-
-    if (row) {
-        neighbor = row.querySelectorAll("div")[x + xDiff];
+  // loop through rows to determine y
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i] == row) {
+      y = i // found matching row, so set y
     }
+  }
 
-    if (neighbor) {
-        neighbor.classList.add("touching");
+  // loop through squares in row to determine x
+  for (let i = 0; i < row.children.length; i++) {
+    if (row.children[i] == square) {
+      x = i // found matching square, so set x
     }
+  }
+
+  // row of neighbor square
+  let neighborRow = rows[y + yDiff]
+
+  if (neighborRow == null) {
+    // row is beyond edge, so no neighbor square
+    return null
+  }
+  else {
+    // if x + xDiff is beyond edge, will be null
+    return neighborRow.children[x + xDiff]
+  }
 }
 
-function gameOver() {
-    for (var i = 0; i < squares.length; i++) {
-        if (squares[i].innerHTML == "" && !squares[i].classList.contains("touching")) {
-            return false;
-        }
+function boardIsFull() {
+  for (let square of squares) {
+    if (square.innerHTML == `` && !square.classList.contains(`touching`)) {
+      return false
     }
+  }
 
-    return true;
+  return true
 }
