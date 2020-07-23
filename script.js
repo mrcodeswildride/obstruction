@@ -3,19 +3,17 @@ let squares = document.getElementsByClassName(`square`)
 let messageParagraph = document.getElementById(`messageParagraph`)
 
 let turn = `O`
-let gameOver = false
 
 for (let square of squares) {
   square.addEventListener(`click`, clickSquare)
 }
 
 function clickSquare() {
-  if (this.innerHTML == `` && !this.classList.contains(`touching`) && !gameOver) {
+  if (this.innerHTML == `` && !this.classList.contains(`touching`)) {
     selectSquare(this)
 
     if (boardIsFull()) {
       messageParagraph.innerHTML = `${turn} wins!`
-      gameOver = true
     }
     else {
       turn = turn == `O` ? `X` : `O`
