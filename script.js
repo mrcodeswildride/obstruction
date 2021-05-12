@@ -13,8 +13,7 @@ function clickSquare() {
 
     if (boardIsFull()) {
       messageParagraph.innerHTML = `${turn} wins!`
-    }
-    else {
+    } else {
       turn = turn == `O` ? `X` : `O`
     }
   }
@@ -64,8 +63,7 @@ function getNeighbor(square, xDiff, yDiff) {
   if (neighborRow == null) {
     // row is beyond edge, so no neighbor square
     return null
-  }
-  else {
+  } else {
     // if x + xDiff is beyond edge, will be null
     return neighborRow.children[x + xDiff]
   }
